@@ -29,6 +29,5 @@ jobs:
       - run: |
           # gci env:* | sort-object name
           Get-ChildItem -Path $env:LOCALAPPDATA -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
-          Get-ChildItem -Path $env:ProgramFiles -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
-          Get-ChildItem -Path ${env:ProgramFiles(x86)} -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
-          Get-ChildItem -Path $env:ProgramData -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
+          Get-ChildItem -Path $env:ProgramFiles\Google -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
+          Get-ChildItem -Path ${env:ProgramFiles(x86)}\Google -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
