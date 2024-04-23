@@ -33,4 +33,4 @@ jobs:
           Get-ChildItem -Path ${env:ProgramFiles(x86)}\Google -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
 
       - run: |
-          C:\Program Files\Google\Chrome\Application\chrome.exe -incognito --ignore-certificate-errors https://httpbin.org/get
+          "C:\Program Files\Google\Chrome\Application\chrome.exe" -incognito --ignore-certificate-errors https://httpbin.org/get
