@@ -17,5 +17,8 @@ jobs:
           pwd
           echo a123 | grep -oP '\d+'
       - run: |
-          Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/latest/chrome_installer.exe' -OutFile 'C:\chrome_installer.exe'
-          Start-Process -FilePath 'C:/chrome_installer.exe' -Args '--silent', '--install' -Wait
+          # Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/latest/chrome_installer.exe' -OutFile 'C:\chrome_installer.exe'
+          # Start-Process -FilePath 'C:/chrome_installer.exe' -Args '--silent', '--install' -Wait
+          cd $env:temp
+          $Path = $env:TEMP; $Installer = "chrome_installer.exe"; Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $Path$Installer; Start-Process -FilePath $Path$Installer -Args "/silent /install" -Verb RunAs -Wait; Remove-Item $Path$Installer
+       
