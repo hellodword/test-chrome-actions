@@ -34,7 +34,7 @@ jobs:
           $Installer = "chrome_installer.exe"
           Invoke-WebRequest "${{ matrix.url }}" -OutFile $Path$Installer
           (Get-FileHash $Path$Installer).Hash -eq "${{ matrix.hash }}"
-          Start-Process -FilePath $Path$Installer -Args "--do-not-launch-chrome" -Verb RunAs -Wait
+          Start-Process -FilePath $Path$Installer -Args "--do-not-launch-chrome" -Wait
           Remove-Item $Path$Installer
 
       - name: search chrome
