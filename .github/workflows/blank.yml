@@ -27,4 +27,4 @@ jobs:
           Remove-Item $Path$Installer
 
       - run: |
-          Get-ChildItem -Path C:\ -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
+          Get-ChildItem -Path $env:LOCALAPPDATA -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
