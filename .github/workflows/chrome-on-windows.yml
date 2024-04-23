@@ -34,7 +34,7 @@ jobs:
           $Installer = "chrome_installer.exe"
           Invoke-WebRequest "${{ matrix.url }}" -OutFile $Path$Installer
           (Get-FileHash $Path$Installer).Hash -eq "${{ matrix.hash }}"
-          Start-Process -FilePath $Path$Installer -Args "/silent /install" -Verb RunAs -Wait
+          Start-Process -FilePath $Path$Installer -Args "--verbose-logging --do-not-launch-chrome --channel=stable --allow-downgrade --trigger-active-setup" -Verb RunAs -Wait
           Remove-Item $Path$Installer
 
       - name: search chrome
