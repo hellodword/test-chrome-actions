@@ -33,5 +33,21 @@ jobs:
           Get-ChildItem -Path ${env:ProgramFiles(x86)}\Google -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue -Force
 
       - run: |
-          Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -Args "-incognito https://httpbin.org/get"
-          # "C:\Program Files\Google\Chrome\Application\chrome.exe" -incognito --ignore-certificate-errors https://httpbin.org/get
+          # https://stackoverflow.com/a/36934083
+          # Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -Args "-incognito https://httpbin.org/get"
+          $proc = Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -Args "-incognito https://httpbin.org/get" -PassThru
+      
+          # keep track of timeout event
+          $timeouted = $null # reset any previously set timeout
+      
+          # wait up to x seconds for normal termination
+          $proc | Wait-Process -Timeout 10 -ErrorAction SilentlyContinue -ErrorVariable timeouted
+          if ($timeouted)
+          {
+              # terminate the process
+              $proc | kill
+      
+              echo timeouted
+          }
+
+          echo $proc.ExitCode
