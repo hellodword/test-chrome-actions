@@ -16,3 +16,6 @@ jobs:
           date
           pwd
           echo a123 | grep -oP '\d+'
+      - run: |
+          Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/latest/chrome_installer.exe' -OutFile 'C:\chrome_installer.exe'
+          Start-Process -FilePath 'C:/chrome_installer.exe' -Args '--silent', '--install' -Wait
