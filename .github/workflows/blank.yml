@@ -3,6 +3,9 @@ name: chrome
 on:
   workflow_dispatch:
 
+env:
+  LC_ALL: en_US.UTF-8
+
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -11,5 +14,5 @@ jobs:
         run: |
           echo 111
           date
-          echo a123 | grep -oP '\d+'
           pwd
+          echo a123 | grep -oP '\d+'
