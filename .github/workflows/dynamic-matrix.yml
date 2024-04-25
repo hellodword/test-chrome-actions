@@ -1,0 +1,23 @@
+name: dynamic-matrix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      mymatrix: ${{ steps.dataStep.outputs.myoutput }}
+    steps:
+      - id: dataStep
+        run: |
+          TARGETS='["dev", "qa", "prod"]'
+          echo "myoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT
+
+  run-matrix:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.mymatrix) }}
+    steps:
+      - run: echo ${{matrix.target}}
