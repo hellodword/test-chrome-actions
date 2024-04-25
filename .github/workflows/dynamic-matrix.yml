@@ -13,6 +13,7 @@ jobs:
         run: |
           TARGETS='["dev", "qa", "prod"]'
           echo "myoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
 
   run-matrix:
     needs: setup
