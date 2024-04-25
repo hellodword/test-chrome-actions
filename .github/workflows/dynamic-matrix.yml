@@ -11,7 +11,7 @@ jobs:
     steps:
       - id: dataStep
         run: |
-          echo 'myoutput={"target":[{"version": "124", "url": "url1"},{"version": "123", "url": "url2"}]}' >> $GITHUB_OUTPUT
+          echo 'myoutput={"platform": ["win11", "win10"],"target":[{"version": "124", "url": "url1"},{"version": "123", "url": "url2"}]}' >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
 
   run-matrix:
@@ -20,4 +20,4 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.mymatrix) }}
     steps:
-      - run: echo ${{matrix.target.version}} - ${{matrix.target.url}}
+      - run: echo ${{matrix.platform}} - ${{matrix.target.version}} - ${{matrix.target.url}}
