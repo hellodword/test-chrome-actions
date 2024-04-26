@@ -58,32 +58,21 @@ jobs:
           find $ANDROID_HOME | grep android-33
         env:
           JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
-      # - name: root avd
-      #   env:
-      #     JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
-      #   run: |
-      #     set -x
-      #     export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
-      #     git clone --depth 1 https://gitlab.com/newbit/rootAVD
-      #     cd rootAVD
+      - name: root avd
+        env:
+          JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
+        run: |
+          set -x
+          export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
+          git clone --depth 1 https://gitlab.com/newbit/rootAVD
+          cd rootAVD
           
-      #     ./rootAVD.sh
-      #     ./rootAVD.sh ListAllAVDs
-      #     ./rootAVD.sh InstallApps
-          
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img FAKEBOOTIMG
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img DEBUG PATCHFSTAB GetUSBHPmodZ
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img restore
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallKernelModules
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallPrebuiltKernelModules
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallPrebuiltKernelModules GetUSBHPmodZ PATCHFSTAB DEBUG
-      #     ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img AddRCscripts
-
+          ./rootAVD.sh /Users/runner/Library/Android/sdk/system-images/android-33/default/x86_64/ramdisk.img
 
       - name: Start emulator
         timeout-minutes: 60
         run: |
+          set -x
           echo "Starting emulator"
           nohup $ANDROID_HOME/emulator/emulator -avd emu -no-snapshot > /dev/null 2>&1 &
           echo "Emulator starting"
@@ -91,7 +80,6 @@ jobs:
           echo "Emulator started"
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell getprop ro.product.cpu.abi
-          set -x
           $ANDROID_HOME/platform-tools/adb shell id
           $ANDROID_HOME/platform-tools/adb shell su -c 'id' || true
         env:
