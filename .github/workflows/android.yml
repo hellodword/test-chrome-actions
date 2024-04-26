@@ -52,6 +52,30 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
         env:
           JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
+
+      - name: root avd
+        env:
+          JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
+        run: |
+          set -x
+          export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
+          git clone --depth 1 https://gitlab.com/newbit/rootAVD
+          cd rootAVD
+          
+          ./rootAVD.sh
+          ./rootAVD.sh ListAllAVDs
+          ./rootAVD.sh InstallApps
+          
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img FAKEBOOTIMG
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img DEBUG PATCHFSTAB GetUSBHPmodZ
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img restore
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallKernelModules
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallPrebuiltKernelModules
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img InstallPrebuiltKernelModules GetUSBHPmodZ PATCHFSTAB DEBUG
+          ./rootAVD.sh system-images/android-33/google_apis_playstore/x86_64/ramdisk.img AddRCscripts
+
+
       - name: Start emulator
         timeout-minutes: 60
         run: |
