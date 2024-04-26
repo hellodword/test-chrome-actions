@@ -26,16 +26,15 @@ jobs:
           java-version: 17
       - name: debug
         run: |
+          set -x
+          which adb
           find "$ANDROID_HOME" -name adb
 
       - name: Install GMD image for baseline profile generation
         run: |
           set -x
           yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
-          yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "$($ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list | awk '{print $1}' | grep 'platform-tools;33' | sort -rV | head -1)"
-      - name: debug
-        run: |
-          find "$ANDROID_HOME" -name adb
+
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
@@ -50,10 +49,12 @@ jobs:
       - name: Start emulator
         timeout-minutes: 60
         run: |
+          set -x
+          ADB="$(find "$ANDROID_HOME" -name adb | head -1)"
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd emu -no-snapshot > /dev/null 2>&1 &
+          nohup $ANDROID_HOME/emulator/emulator -avd emu -no-snapshot &
           echo "Emulator starting"
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+          $ADB wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           echo "Emulator started"
-          $ANDROID_HOME/platform-tools/adb devices
-          $ANDROID_HOME/platform-tools/adb shell getprop ro.product.cpu.abi
+          $ADB devices
+          $ADB shell getprop ro.product.cpu.abi
