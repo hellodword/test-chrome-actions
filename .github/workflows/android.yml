@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: ${{ matrix.system }}
-    runs-on: macos-latest
+    runs-on: macos-12
     strategy:
       fail-fast: false
       matrix:
@@ -26,16 +26,26 @@ jobs:
         # run: echo "::set-output name=JAVA_HOME::${JAVA_HOME}"
         run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_OUTPUT
         
-      - name: Install Docker and Colima
-        run: brew install docker colima
-  
-      - name: Run Colima
-        run: colima start
+      - name: Install docker
+        shell: bash
+        run: |
+          brew install docker-machine docker
+          sudo docker --version
+      - name: Info
+        shell: bash
+        run: |
+          hostname
+          VBoxManage --version
+          sysctl hw.physicalcpu hw.logicalcpu
+      - name: Disable firewall
+        run: |
+          sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+          sudo /usr/libexec/ApplicationFirewall/socketfilterfw -k
 
       - name: run docker
         run: |
-          docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
-          docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
+          sudo docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
+          sudo docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
 
       - name: show trycloudflared
         id: cloudflare
