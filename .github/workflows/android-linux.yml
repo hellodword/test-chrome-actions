@@ -27,7 +27,7 @@ jobs:
       - name: debug
         run: |
           set -x
-          which adb
+          which adb || true
           find "$ANDROID_HOME" -name adb
 
       - name: Install GMD image for baseline profile generation
