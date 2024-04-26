@@ -28,6 +28,8 @@ jobs:
 
       - name: run docker
         run: |
+          brew install docker
+          colima start
           docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
           docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
 
