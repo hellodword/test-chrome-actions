@@ -24,6 +24,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+      - name: debug
+        run: |
+          find "$ANDROID_HOME" -name adb
+          exit 1
 
       - name: Install GMD image for baseline profile generation
         run: |
