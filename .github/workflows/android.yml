@@ -58,16 +58,16 @@ jobs:
           find $ANDROID_HOME | grep android-33
         env:
           JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
-      - name: root avd
-        env:
-          JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
-        run: |
-          set -x
-          export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
-          git clone --depth 1 https://gitlab.com/newbit/rootAVD
-          cd rootAVD
+      # - name: root avd
+      #   env:
+      #     JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
+      #   run: |
+      #     set -x
+      #     export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
+      #     git clone --depth 1 https://gitlab.com/newbit/rootAVD
+      #     cd rootAVD
           
-          ./rootAVD.sh /Users/runner/Library/Android/sdk/system-images/android-33/default/x86_64/ramdisk.img
+      #     ./rootAVD.sh /Users/runner/Library/Android/sdk/system-images/android-33/default/x86_64/ramdisk.img
 
       - name: Start emulator
         timeout-minutes: 60
@@ -81,6 +81,22 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell getprop ro.product.cpu.abi
           $ANDROID_HOME/platform-tools/adb shell id
-          $ANDROID_HOME/platform-tools/adb shell su -c 'id' || true
+          # $ANDROID_HOME/platform-tools/adb shell su -c 'id' || true
+          $ANDROID_HOME/platform-tools/adb shell cmd package list packages
+          $ANDROID_HOME/platform-tools/adb shell netcfg || true
+          $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-1.png
+          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d https://www.google.com
+          sleep 3
+          $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-2.png
+          sleep 3
+          $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-3.png
+          sleep 3
+          $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-4.png
+          sleep 3
+          $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-5.png
         env:
           JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test
+          path: test-*.png
