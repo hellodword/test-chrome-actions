@@ -26,6 +26,19 @@ jobs:
         # run: echo "::set-output name=JAVA_HOME::${JAVA_HOME}"
         run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_OUTPUT
 
+      - name: run docker
+        run: |
+          docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
+          docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
+
+      - name: show trycloudflared
+        id: cloudflare
+        run: |
+          docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com'
+          sleep 3
+          CLOUDFLARE="$(docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com')"
+          echo "CLOUDFLARE=$CLOUDFLARE" >> $GITHUB_OUTPUT
+
       # - name: set up JDK 11
       #   uses: actions/setup-java@v2
       #   with:
@@ -85,7 +98,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell cmd package list packages
           $ANDROID_HOME/platform-tools/adb shell netcfg || true
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-1.png
-          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d https://www.google.com
+          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d ${{ steps.cloudflare.outputs.CLOUDFLARE }}/actions
           sleep 3
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-2.png
           sleep 3
@@ -100,3 +113,7 @@ jobs:
         with:
           name: test
           path: test-*.png
+
+      - name: show log
+        run: |
+          docker logs http
