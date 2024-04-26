@@ -63,7 +63,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell getprop ro.product.cpu.abi
           set -x
-          $ANDROID_HOME/platform-tools/adb root || true
+          $ANDROID_HOME/platform-tools/adb shell id
           $ANDROID_HOME/platform-tools/adb shell su -c 'id' || true
         env:
           JAVA_HOME: ${{ steps.java8.outputs.JAVA_HOME }}
