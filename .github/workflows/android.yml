@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: ${{ matrix.system }}
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -27,20 +27,20 @@ jobs:
         run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_OUTPUT
         
       - name: Install docker
-        shell: bash
         run: |
-          brew install docker-machine docker
-          sudo docker --version
-      - name: Info
-        shell: bash
-        run: |
-          hostname
-          VBoxManage --version
-          sysctl hw.physicalcpu hw.logicalcpu
-      - name: Disable firewall
-        run: |
-          sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-          sudo /usr/libexec/ApplicationFirewall/socketfilterfw -k
+            brew install colima docker
+            colima start
+            sudo docker --version
+      # - name: Info
+      #   shell: bash
+      #   run: |
+      #     hostname
+      #     VBoxManage --version
+      #     sysctl hw.physicalcpu hw.logicalcpu
+      # - name: Disable firewall
+      #   run: |
+      #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+      #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw -k
 
       - name: run docker
         run: |
