@@ -32,7 +32,7 @@ jobs:
         run: |
           set -x
           yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
-          yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "$($ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --list | awk '{print $1}' | grep 'platform-tools;33' | sort -rV | head -1)"
+          yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "$($ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list | awk '{print $1}' | grep 'platform-tools;33' | sort -rV | head -1)"
       - name: debug
         run: |
           find "$ANDROID_HOME" -name adb
