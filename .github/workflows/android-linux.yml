@@ -27,12 +27,15 @@ jobs:
       - name: debug
         run: |
           find "$ANDROID_HOME" -name adb
-          exit 1
 
       - name: Install GMD image for baseline profile generation
         run: |
+          set -x
           yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
-
+          yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "$(sdkmanager --list | awk '{print $1}' | grep 'platform-tools;33' | sort -rV | head -1)"
+      - name: debug
+        run: |
+          find "$ANDROID_HOME" -name adb
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
