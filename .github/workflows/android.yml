@@ -13,7 +13,7 @@ jobs:
           # - system: "android-31;default;arm64-v8a"
           # - system: "android-31;default;x86_64"
           # - system: "android-34;default;x86_64"
-          - system: "android-31;google_apis;x86_64"
+          - system: "android-31;default;x86_64"
     steps:
       - name: Install JDK 8
         uses: actions/setup-java@v4
@@ -102,7 +102,8 @@ jobs:
         timeout-minutes: 60
         run: |
           set -x
-          wget -q --show-progress "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-amd64.tgz" -O "cloudflared.tgz"
+          wget -q https://github.com/bromite/chromium/releases/download/108.0.5359.156/chr_x64_ChromePublic.apk -O "chromium.apk"
+          wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-amd64.tgz" -O "cloudflared.tgz"
           tar -zxf cloudflared.tgz > /dev/null 2>&1
           chmod +x cloudflared
           python -m http.server -d /tmp &
@@ -120,7 +121,9 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell netcfg || true
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-1.png
           cloudflare="$(cat cloudflare.log | grep -oP 'https://[^\n \./]+\.trycloudflare.com')"
-          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d $cloudflare/from-actions
+          # $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d $cloudflare/from-actions
+          $ANDROID_HOME/platform-tools/adb install chromium.apk
+          $ANDROID_HOME/platform-tools/adb shell am start -n org.chromium.chrome/com.google.android.apps.chrome.Main -d "$cloudflare/from-actions"
           sleep 3
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-2.png
           sleep 3
