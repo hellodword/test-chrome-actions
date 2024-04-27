@@ -25,35 +25,35 @@ jobs:
         id: java8
         # run: echo "::set-output name=JAVA_HOME::${JAVA_HOME}"
         run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_OUTPUT
-        
-      - name: Install docker
-        run: |
-            brew install colima docker
-            colima start
-            sudo docker --version
-      # - name: Info
-      #   shell: bash
-      #   run: |
-      #     hostname
-      #     VBoxManage --version
-      #     sysctl hw.physicalcpu hw.logicalcpu
-      # - name: Disable firewall
-      #   run: |
-      #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-      #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw -k
 
-      - name: run docker
-        run: |
-          sudo docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
-          sudo docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
+      # - name: Install docker
+      #   run: |
+      #       brew install colima docker
+      #       colima start
+      #       sudo docker --version
+      # # - name: Info
+      # #   shell: bash
+      # #   run: |
+      # #     hostname
+      # #     VBoxManage --version
+      # #     sysctl hw.physicalcpu hw.logicalcpu
+      # # - name: Disable firewall
+      # #   run: |
+      # #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+      # #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw -k
 
-      - name: show trycloudflared
-        id: cloudflare
-        run: |
-          docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com'
-          sleep 3
-          CLOUDFLARE="$(docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com')"
-          echo "CLOUDFLARE=$CLOUDFLARE" >> $GITHUB_OUTPUT
+      # - name: run docker
+      #   run: |
+      #     sudo docker run --rm -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://127.0.0.1:8000
+      #     sudo docker run --rm -d --name http -p 8000:8000 python:latest python -m http.server -d /tmp
+
+      # - name: show trycloudflared
+      #   id: cloudflare
+      #   run: |
+      #     docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com'
+      #     sleep 3
+      #     CLOUDFLARE="$(docker logs cloudflared 2>&1 | grep -oP 'https://[^\n \./]+\.trycloudflare.com')"
+      #     echo "CLOUDFLARE=$CLOUDFLARE" >> $GITHUB_OUTPUT
 
       # - name: set up JDK 11
       #   uses: actions/setup-java@v2
@@ -102,6 +102,11 @@ jobs:
         timeout-minutes: 60
         run: |
           set -x
+          wget -q --show-progress "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-amd64.tgz" -O "cloudflared.tgz"
+          tar -zxf cloudflared.tgz > /dev/null 2>&1
+          chmod +x cloudflared
+          python -m http.server -d /tmp &
+          cloudflared tunnel --url http://127.0.0.1:8000 > cloudflare.log 2>&1 &
           echo "Starting emulator"
           nohup $ANDROID_HOME/emulator/emulator -avd emu -no-snapshot > /dev/null 2>&1 &
           echo "Emulator starting"
@@ -114,7 +119,8 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell cmd package list packages
           $ANDROID_HOME/platform-tools/adb shell netcfg || true
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-1.png
-          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d ${{ steps.cloudflare.outputs.CLOUDFLARE }}/actions
+          cloudflare="$(cat cloudflare.log | grep -oP 'https://[^\n \./]+\.trycloudflare.com')"
+          $ANDROID_HOME/platform-tools/adb shell am start -a android.intent.action.VIEW -d $cloudflare/from-actions
           sleep 3
           $ANDROID_HOME/platform-tools/adb exec-out screencap -p > test-2.png
           sleep 3
@@ -130,6 +136,6 @@ jobs:
           name: test
           path: test-*.png
 
-      - name: show log
-        run: |
-          docker logs http
+      # - name: show log
+      #   run: |
+      #     docker logs http
