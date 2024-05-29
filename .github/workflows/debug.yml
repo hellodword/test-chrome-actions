@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run a multi-line script
-        run: |
-          echo "https://api.github.com/repos/${{ github.repository }}/contents/"
+      - run: sudo du --max-depth=1 /
+      - run: sudo du --max-depth=2 /
+      - run: sudo du --max-depth=3 /
+      - run: sudo du --max-depth=1 ~
+      - run: sudo du --max-depth=2 ~
+      - run: sudo du --max-depth=3 ~
+      - run: docker images
