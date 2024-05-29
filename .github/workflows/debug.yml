@@ -8,10 +8,4 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: sudo du --max-depth=1 /
-      - run: sudo du --max-depth=2 /
-      - run: sudo du --max-depth=3 /
-      - run: sudo du --max-depth=1 ~
-      - run: sudo du --max-depth=2 ~
-      - run: sudo du --max-depth=3 ~
-      - run: docker images
+      - uses: AdityaGarg8/remove-unwanted-software@3ccb44bee98b5232ab087e2bb23a5d8b14043223
