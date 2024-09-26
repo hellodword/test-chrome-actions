@@ -1,0 +1,50 @@
+name: detours
+
+env:
+  # Turn on msvc analysis during build, enable once warnings are clean.
+  DETOURS_ANALYZE: false
+
+  # Compile in parallel where possible.
+  CL: /MP
+
+# Triggers the workflow on push or pull request events for the master branch.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, windows-2022]
+        arch: [x86, x64]
+        conf: [Release]
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'microsoft/Detours'
+
+      # Setup build environment variables using vcvarsall.bat.
+      - name: Configure MSCV Compiler for ${{ matrix.arch }}
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build Detours for ${{ matrix.arch }} on ${{ matrix.os }}
+        env:
+          # Tell detours what process to target
+          DETOURS_TARGET_PROCESSOR: ${{ env.VSCMD_ARG_TGT_ARCH }}
+          DETOURS_CONFIG: ${{ matrix.conf }}
+        run: nmake
+
+      - name: Upload artifacts for ${{ matrix.arch }} on ${{ matrix.os }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts-${{ matrix.os }}
+          path: |
+            lib.*/
+            bin.*/
+            include/
