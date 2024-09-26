@@ -23,9 +23,9 @@ jobs:
 
     steps:
       - name: Clone Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: 'microsoft/Detours'
+          repository: "microsoft/Detours"
 
       # Setup build environment variables using vcvarsall.bat.
       - name: Configure MSCV Compiler for ${{ matrix.arch }}
@@ -41,9 +41,9 @@ jobs:
         run: nmake
 
       - name: Upload artifacts for ${{ matrix.arch }} on ${{ matrix.os }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os }}
+          name: artifacts-${{ matrix.os }}-${{ matrix.conf }}
           path: |
             lib.*/
             bin.*/
