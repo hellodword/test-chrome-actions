@@ -1,0 +1,33 @@
+name: create-pr
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: create new branch
+        run: |
+                  git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git checkout -b "automated/new_file"
+                  echo n > n0
+                  git add n0
+                  git commit -m "[bot] new file"
+                  git push origin automated/new_file
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: create pr
+        run: |
+          gh pr create --fill
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
