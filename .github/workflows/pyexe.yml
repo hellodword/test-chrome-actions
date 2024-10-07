@@ -29,6 +29,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run a multi-line script
+      - name: Build
         run: |
           ${{ inputs.cli }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: foo-windows
+          path: |
+            dist/foo
+            dist/foo.exe
