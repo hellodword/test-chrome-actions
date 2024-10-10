@@ -1,0 +1,50 @@
+name: rsshub
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rsshub
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: config git
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch --all
+
+      - name: start rsshub
+        run: |
+          docker run -d --name rsshub \
+              -e PORT=1200 \
+              -e LISTEN_INADDR_ANY=1 \
+              -e REQUEST_RETRY=2 \
+              -e REQUEST_TIMEOUT=3000 \
+              -e CACHE_TYPE=memory \
+              -e MEMORY_MAX=256 \
+              -e DEBUG_INFO=true \
+              -e LOGGER_LEVEL=info \
+              -e NO_LOGFILES=false \
+              -e SHOW_LOGGER_TIMESTAMP=true \
+              -e NODE_ENV=production \
+              diygod/rsshub
+
+      - name: check healthz
+        timeout-minutes: 3
+        run: |
+          while ! curl -f http://127.0.0.1:1200/healthz; do
+            sleep 3s
+            docker ps
+          done
+
