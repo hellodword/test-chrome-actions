@@ -27,6 +27,7 @@ jobs:
       - name: start rsshub
         run: |
           docker run -d --name rsshub \
+              -p 127.0.0.1:1200:1200 \
               -e PORT=1200 \
               -e LISTEN_INADDR_ANY=1 \
               -e REQUEST_RETRY=2 \
@@ -38,13 +39,18 @@ jobs:
               -e NO_LOGFILES=false \
               -e SHOW_LOGGER_TIMESTAMP=true \
               -e NODE_ENV=production \
+              -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
               diygod/rsshub
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: check healthz
         timeout-minutes: 3
         run: |
           while ! curl -f http://127.0.0.1:1200/healthz; do
             sleep 3s
-            docker ps
           done
 
+      - name: test
+        run: |
+          curl -f http://127.0.0.1:1200/github/pull/NixOS/nixpkgs/all/1.severity:%20security
