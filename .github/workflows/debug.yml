@@ -8,26 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: (Debug) show storage
+      - uses: actions/setup-node@v4
+      - name: (Debug)
         run: |
-          set -x
-          df -T
-          df -T `pwd`
-
-      - uses: AdityaGarg8/remove-unwanted-software@3ccb44bee98b5232ab087e2bb23a5d8b14043223
-        with:
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'false'
-          remove-large-packages: 'false'
-          remove-cached-tools: 'true'
-          remove-swapfile: 'false'
-
-      - name: (Debug) show storage
-        run: |
-          set -x
-          df -T
-          df -T `pwd`
+          git clone -b v0.43.17-alpha --depth=1 https://github.com/anyproto/anytype-ts
+          cd anytype-ts
+          npm i
+          git status
+          git diff
