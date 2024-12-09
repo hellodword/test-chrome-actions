@@ -32,6 +32,6 @@ jobs:
           PR_URL="$(gh pr create --fill)"
           echo "PR_URL $PR_URL"
           echo gh pr merge "$PR_URL" --delete-branch --rebase
-          gh pr merge "$PR_URL" --delete-branch --rebase
+          gh pr merge "$PR_URL" --delete-branch --rebase --auto
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
