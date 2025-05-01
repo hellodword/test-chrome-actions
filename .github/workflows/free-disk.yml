@@ -1,5 +1,4 @@
-
-name: Build Plugin
+name: Free disk
 
 on:
   workflow_dispatch:
