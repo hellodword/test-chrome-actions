@@ -1,0 +1,14 @@
+name: nothingbutnix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wimpysworld/nothing-but-nix@10c936d9e46521bf923f75458e0cbd4fa309300d
+      - run: |
+          which docker
+          sudo service docker restart
+          docker pull alpine
